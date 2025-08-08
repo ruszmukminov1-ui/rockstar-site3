@@ -83,7 +83,7 @@ const Header: React.FC = () => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              🇷🇺 RU
+                RU
             </button>
             <button
               onClick={() => setLanguage('en')}
@@ -93,7 +93,7 @@ const Header: React.FC = () => {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              🇬🇧 EN
+                EN
             </button>
           </div>
         </div>
