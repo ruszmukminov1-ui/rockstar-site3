@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+/* ======== Base styles ======== */
+body {
+  @apply bg-black text-white font-rajdhani antialiased;
+  overflow-x: hidden;
+}
+
+/* ======== Neon text and buttons ======== */
+.neon-text {
+  color: #a855f7;
+  text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
+}
+
+.neon-button {
+  @apply px-4 py-2 md:px-6 md:py-3 rounded-full font-bold uppercase transition duration-300;
+  background: linear-gradient(90deg, #a855f7, #ec4899);
+  color: white;
+  box-shadow: 0 0 10px #a855f7, 0 0 20px #ec4899;
+}
+
+.neon-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #a855f7, 0 0 25px #ec4899;
+}
+
+/* ======== Neon border (for cards, modals) ======== */
+.neon-box {
+  @apply rounded-2xl border border-purple-500/40 p-4 md:p-6 shadow-lg;
+  background-color: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+/* ======== Animations ======== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.7s ease-out forwards;
+}
+
+/* ======== Scrollbar customization ======== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #a855f7;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+/* ======== Text selection ======== */
+::selection {
+  background: rgba(168, 85, 247, 0.3);
+  color: white;
+}
+
+::-moz-selection {
+  background: rgba(168, 85, 247, 0.3);
+  color: white;
+}
+
+/* ======== Mobile optimizations ======== */
+@media (max-width: 768px) {
+  .neon-button {
+    @apply px-4 py-2 text-sm;
+  }
+  
+  .neon-box {
+    @apply p-4;
+  }
+}
+
+/* ======== Prevent body scroll when modal is open ======== */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ======== Focus styles for accessibility ======== */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #a855f7;
+  outline-offset: 2px;
+}
+
+/* ======== Smooth transitions for all interactive elements ======== */
+button,
+input,
+textarea,
+select {
+  transition: all 0.3s ease;
+}
+
+/* ======== Mobile menu animations ======== */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-top {
+  animation: slideInFromTop 0.3s ease-out forwards;
+}
