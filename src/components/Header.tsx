@@ -59,7 +59,7 @@ const Header: React.FC = () => {
           >
             <div className="relative">
               <img 
-                src="https://i.postimg.cc/HnqD9BhG/photo-2025-06-07-17-23-21.png" 
+                src="https://i.postimg.cc/tJBrMhWD/1754689646303.png" 
                 alt="Rockstar Logo"
                 className="w-8 h-8 md:w-10 md:h-10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
                 style={{
