@@ -65,6 +65,10 @@ const SupportModal: React.FC = () => {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="relative w-full max-w-sm md:max-w-4xl bg-gray-900/95 backdrop-blur-md border border-purple-500/50 rounded-2xl shadow-2xl shadow-purple-500/25 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          maxHeight: '90vh',
+          overflowY: 'auto'
+        }}
       >
         <button
           onClick={closeSupportModal}

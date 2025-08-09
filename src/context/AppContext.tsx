@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '../types/Product';
 import { User } from '../types/User';
+import { PurchasedProduct } from '../types/User';
 import { storageUtils } from '../utils/storage';
+import { useNotifications } from '../hooks/useNotifications';
 
 export type Language = 'ru' | 'en';
 
@@ -30,6 +32,27 @@ interface AppContextType {
   // Mobile menu
   isMobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
+  
+  // Profile modal
+  isProfileOpen: boolean;
+  openProfileModal: () => void;
+  closeProfileModal: () => void;
+  
+  // Product details modal
+  isProductDetailsOpen: boolean;
+  openProductDetailsModal: (product: PurchasedProduct, clickPosition?: { x: number; y: number }) => void;
+  closeProductDetailsModal: () => void;
+  selectedProductForDetails: PurchasedProduct | null;
+  productDetailsClickPosition: { x: number; y: number } | undefined;
+  
+  // Notifications
+  notifications: any[];
+  removeNotification: (id: string) => void;
+  showLoginSuccess: () => void;
+  showRegisterSuccess: () => void;
+  showPurchaseSuccess: (productTitle: string) => string;
+  showLogoutSuccess: () => void;
+  showError: (title: string, message: string) => void;
 }
 
 const translations = {
@@ -281,6 +304,20 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProductForOrder, setSelectedProductForOrder] = useState<Product | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setProfileOpen] = useState(false);
+  const [isProductDetailsOpen, setProductDetailsOpen] = useState(false);
+  const [selectedProductForDetails, setSelectedProductForDetails] = useState<PurchasedProduct | null>(null);
+  const [productDetailsClickPosition, setProductDetailsClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
+  
+  const {
+    notifications,
+    removeNotification,
+    showLoginSuccess,
+    showRegisterSuccess,
+    showPurchaseSuccess,
+    showLogoutSuccess,
+    showError,
+  } = useNotifications();
 
   // Load language from localStorage on mount
   useEffect(() => {
@@ -339,12 +376,35 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     document.body.style.overflow = 'unset';
   };
 
+  const openProfileModal = () => {
+    setProfileOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeProfileModal = () => {
+    setProfileOpen(false);
+    document.body.style.overflow = 'unset';
+  };
+
+  const openProductDetailsModal = (product: PurchasedProduct, clickPosition?: { x: number; y: number }) => {
+    setSelectedProductForDetails(product);
+    setProductDetailsClickPosition(clickPosition);
+    setProductDetailsOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeProductDetailsModal = () => {
+    setSelectedProductForDetails(null);
+    setProductDetailsClickPosition(undefined);
+    setProductDetailsOpen(false);
+    document.body.style.overflow = 'unset';
+  };
   // Close mobile menu when modal opens
   useEffect(() => {
-    if (isAuthOpen || isSupportOpen || isOrderOpen) {
+    if (isAuthOpen || isSupportOpen || isOrderOpen || isProfileOpen || isProductDetailsOpen) {
       setMobileMenuOpen(false);
     }
-  }, [isAuthOpen, isSupportOpen, isOrderOpen]);
+  }, [isAuthOpen, isSupportOpen, isOrderOpen, isProfileOpen, isProductDetailsOpen]);
 
   return (
     <AppContext.Provider
@@ -366,6 +426,21 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setCurrentUser,
         isMobileMenuOpen,
         setMobileMenuOpen,
+        isProfileOpen,
+        openProfileModal,
+        closeProfileModal,
+        isProductDetailsOpen,
+        openProductDetailsModal,
+        closeProductDetailsModal,
+        selectedProductForDetails,
+        productDetailsClickPosition,
+        notifications,
+        removeNotification,
+        showLoginSuccess,
+        showRegisterSuccess,
+        showPurchaseSuccess,
+        showLogoutSuccess,
+        showError,
       }}
     >
       {children}

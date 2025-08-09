@@ -9,6 +9,9 @@ import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import SupportModal from "./components/SupportModal";
 import OrderModal from "./components/OrderModal";
+import ProfileModal from "./components/ProfileModal";
+import ProductDetailsModal from "./components/ProductDetailsModal";
+import NotificationSystem from "./components/NotificationSystem";
 import VideoReviews from "./components/VideoReviews";
 import FloatingElements from "./components/FloatingElements";
 import Dashboard from "./components/Dashboard";
@@ -17,7 +20,20 @@ import Terms from "./components/Terms";
 import { AppContextProvider, useApp } from "./context/AppContext";
 
 function AppContent() {
-  const { currentUser, isAuthOpen, isSupportOpen, isOrderOpen } = useApp();
+  const { 
+    currentUser, 
+    isAuthOpen, 
+    isSupportOpen, 
+    isOrderOpen, 
+    isProfileOpen,
+    isProductDetailsOpen,
+    selectedProductForDetails,
+    productDetailsClickPosition,
+    closeProfileModal,
+    closeProductDetailsModal,
+    notifications,
+    removeNotification
+  } = useApp();
   const [showDashboard, setShowDashboard] = useState(false);
 
   const scrollToShop = () => {
@@ -69,6 +85,21 @@ function AppContent() {
       {isAuthOpen && <AuthModal />}
       {isSupportOpen && <SupportModal />}
       {isOrderOpen && <OrderModal />}
+      {isProfileOpen && <ProfileModal isOpen={isProfileOpen} onClose={closeProfileModal} />}
+      {isProductDetailsOpen && (
+        <ProductDetailsModal 
+          isOpen={isProductDetailsOpen} 
+          onClose={closeProductDetailsModal}
+          product={selectedProductForDetails}
+          clickPosition={productDetailsClickPosition}
+        />
+      )}
+      
+      {/* Notification System */}
+      <NotificationSystem 
+        notifications={notifications}
+        onRemove={removeNotification}
+      />
     </Router>
   );
 }

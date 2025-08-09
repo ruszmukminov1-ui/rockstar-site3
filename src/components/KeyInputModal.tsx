@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Key, X } from 'lucide-react';
 import { storageUtils } from '../utils/storage';
-import { PurchasedProduct } from '../types/User';
+import { PurchasedProduct, User } from '../types/User';
+import { useApp } from '../context/AppContext';
 
 interface KeyInputModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  product?: PurchasedProduct;
 }
 
-const KeyInputModal: React.FC<KeyInputModalProps> = ({ onClose, onSuccess }) => {
+const KeyInputModal: React.FC<KeyInputModalProps> = ({ onClose, onSuccess, product }) => {
   const [accessKey, setAccessKey] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { currentUser, setCurrentUser, showError } = useApp();
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -33,41 +36,33 @@ const KeyInputModal: React.FC<KeyInputModalProps> = ({ onClose, onSuccess }) => 
       return;
     }
 
-    // Simulate key validation
+    if (!currentUser) {
+      showError('Ошибка', 'Пользователь не найден');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate key format
+    if (accessKey.length < 8) {
+      setError('Неверный формат ключа');
+      setIsLoading(false);
+      return;
+    }
+
     setTimeout(() => {
-      const currentUser = storageUtils.getCurrentUser();
-      if (!currentUser) {
-        setError('Пользователь не найден');
-        setIsLoading(false);
-        return;
-      }
-
-      // For demo purposes, accept any key that looks like a valid format
-      if (accessKey.length < 8) {
-        setError('Неверный формат ключа');
-        setIsLoading(false);
-        return;
-      }
-
-      // Add a demo product to user's account
-      const demoProduct: PurchasedProduct = {
-        id: 1,
-        title: "Rockstar 2.0",
-        version: "2.0.1",
-        duration: "Навсегда",
-        ramSize: "8 ГБ",
-        purchaseDate: new Date().toISOString(),
-      };
-
-      // Update user with the key and product
-      const updatedUser = {
+      // Update the specific product with the access key
+      const updatedUser: User = {
         ...currentUser,
-        accessKey: accessKey,
-        purchasedProducts: [demoProduct]
+        purchasedProducts: currentUser.purchasedProducts.map(p => 
+          p.id === product?.id 
+            ? { ...p, accessKey: accessKey }
+            : p
+        )
       };
 
       storageUtils.saveUser(updatedUser);
       storageUtils.setCurrentUser(updatedUser);
+      setCurrentUser(updatedUser);
 
       setIsLoading(false);
       onSuccess();
@@ -114,7 +109,7 @@ const KeyInputModal: React.FC<KeyInputModalProps> = ({ onClose, onSuccess }) => 
             Введите ключ
           </h2>
           <p className="text-gray-400 mt-2">
-            Введите ключ, полученный после покупки
+            {product ? `Введите ключ для ${product.title}` : 'Введите ключ, полученный после покупки'}
           </p>
         </div>
 

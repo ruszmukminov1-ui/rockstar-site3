@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, ArrowLeft, Download, Clock, HardDrive, Shield, Key, Monitor } from 'lucide-react';
+import { User, ArrowLeft, Download, Clock, HardDrive, Shield, Key, Monitor, Settings } from 'lucide-react';
 import { User as UserType } from '../types/User';
 import { useApp } from '../context/AppContext';
 
@@ -10,8 +10,16 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user, onBack }) => {
-  const { t } = useApp();
+  const { t, openProductDetailsModal } = useApp();
 
+  const handleProductClick = (product: any, event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickPosition = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+    openProductDetailsModal(product, clickPosition);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white pt-16 md:pt-20 p-4 md:p-6">
       <motion.div
@@ -89,7 +97,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onBack }) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                  className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-purple-500/50 rounded-xl p-4 md:p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/40 backdrop-blur-sm"
+                  className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border border-purple-500/50 rounded-xl p-4 md:p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/40 backdrop-blur-sm cursor-pointer"
+                  onClick={(e) => handleProductClick(product, e)}
                 >
                   <div className="flex items-center justify-between mb-3 md:mb-4">
                     <h3 className="text-lg md:text-xl font-bold text-purple-400">{product.title}</h3>
@@ -140,13 +149,32 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onBack }) => {
                     </div>
                   </div>
                   
-                  <motion.button 
-                    className="w-full mt-3 md:mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-2 rounded-lg transition-all duration-300 font-semibold shadow-lg hover:shadow-purple-500/40 text-sm md:text-base"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {t('dashboard.download')}
-                  </motion.button>
+                  <div className="flex gap-2 mt-3 md:mt-4">
+                    <motion.button 
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-2 rounded-lg transition-all duration-300 font-semibold shadow-lg hover:shadow-purple-500/40 text-sm md:text-base"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProductClick(product, e);
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Подробнее
+                    </motion.button>
+                    
+                    <motion.button 
+                      className="px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 py-2 rounded-lg transition-all duration-300 font-semibold shadow-lg hover:shadow-cyan-500/40 text-sm md:text-base"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProductClick(product, e);
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      title="Настройки продукта"
+                    >
+                      <Settings size={16} />
+                    </motion.button>
+                  </div>
                 </motion.div>
               ))}
             </div>

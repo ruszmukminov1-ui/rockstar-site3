@@ -7,7 +7,7 @@ import { X, CreditCard } from "lucide-react";
 import { useApp } from "../context/AppContext";
 
 const OrderModal: React.FC = () => {
-  const { isOrderOpen, closeOrderModal, selectedProductForOrder, currentUser, t } = useApp();
+  const { isOrderOpen, closeOrderModal, selectedProductForOrder, currentUser, t, showPurchaseSuccess } = useApp();
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const OrderModal: React.FC = () => {
     // Simulate free purchase
     setTimeout(() => {
       if (currentUser && selectedProductForOrder) {
-        // Generate unique key
-        const accessKey = generateAccessKey();
+        // Generate unique key and show notification
+        const accessKey = showPurchaseSuccess(selectedProductForOrder.title);
         
         const purchasedProduct: PurchasedProduct = {
           id: selectedProductForOrder.id,
@@ -69,7 +69,9 @@ const OrderModal: React.FC = () => {
         onClick={(e) => e.stopPropagation()}
         style={{
           background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%)',
-          boxShadow: '0 0 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          boxShadow: '0 0 50px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          maxHeight: '90vh',
+          overflowY: 'auto'
         }}
       >
         <button
