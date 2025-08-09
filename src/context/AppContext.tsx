@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Product } from '../types/Product';
 import { User } from '../types/User';
 import { storageUtils } from '../utils/storage';
+import { useNotifications } from '../hooks/useNotifications';
 
 export type Language = 'ru' | 'en';
 
@@ -30,6 +31,20 @@ interface AppContextType {
   // Mobile menu
   isMobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
+  
+  // Profile modal
+  isProfileOpen: boolean;
+  openProfileModal: () => void;
+  closeProfileModal: () => void;
+  
+  // Notifications
+  notifications: any[];
+  removeNotification: (id: string) => void;
+  showLoginSuccess: () => void;
+  showRegisterSuccess: () => void;
+  showPurchaseSuccess: (productTitle: string) => string;
+  showLogoutSuccess: () => void;
+  showError: (title: string, message: string) => void;
 }
 
 const translations = {
@@ -281,6 +296,17 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProductForOrder, setSelectedProductForOrder] = useState<Product | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setProfileOpen] = useState(false);
+  
+  const {
+    notifications,
+    removeNotification,
+    showLoginSuccess,
+    showRegisterSuccess,
+    showPurchaseSuccess,
+    showLogoutSuccess,
+    showError,
+  } = useNotifications();
 
   // Load language from localStorage on mount
   useEffect(() => {
@@ -339,12 +365,22 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     document.body.style.overflow = 'unset';
   };
 
+  const openProfileModal = () => {
+    setProfileOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeProfileModal = () => {
+    setProfileOpen(false);
+    document.body.style.overflow = 'unset';
+  };
+
   // Close mobile menu when modal opens
   useEffect(() => {
-    if (isAuthOpen || isSupportOpen || isOrderOpen) {
+    if (isAuthOpen || isSupportOpen || isOrderOpen || isProfileOpen) {
       setMobileMenuOpen(false);
     }
-  }, [isAuthOpen, isSupportOpen, isOrderOpen]);
+  }, [isAuthOpen, isSupportOpen, isOrderOpen, isProfileOpen]);
 
   return (
     <AppContext.Provider
@@ -366,6 +402,16 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setCurrentUser,
         isMobileMenuOpen,
         setMobileMenuOpen,
+        isProfileOpen,
+        openProfileModal,
+        closeProfileModal,
+        notifications,
+        removeNotification,
+        showLoginSuccess,
+        showRegisterSuccess,
+        showPurchaseSuccess,
+        showLogoutSuccess,
+        showError,
       }}
     >
       {children}

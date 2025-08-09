@@ -7,7 +7,7 @@ import { generateAccessKey } from '../utils/keyGenerator';
 import { useApp } from '../context/AppContext';
 
 const AuthModal: React.FC = () => {
-  const { isAuthOpen, closeAuthModal, setCurrentUser, t } = useApp();
+  const { isAuthOpen, closeAuthModal, setCurrentUser, t, showLoginSuccess, showRegisterSuccess, showError } = useApp();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [formData, setFormData] = useState({
     email: '',
@@ -80,13 +80,13 @@ const AuthModal: React.FC = () => {
         const existingUser = storageUtils.getUserByEmail(formData.email);
         
         if (!existingUser) {
-          setErrors([t('error.userNotFound')]);
+          showError('Ошибка входа', t('error.userNotFound'));
           setIsLoading(false);
           return;
         }
         
         if (existingUser.password !== formData.password) {
-          setErrors([t('error.wrongPassword')]);
+          showError('Ошибка входа', t('error.wrongPassword'));
           setIsLoading(false);
           return;
         }
@@ -96,13 +96,14 @@ const AuthModal: React.FC = () => {
         
         storageUtils.setCurrentUser(existingUser);
         setCurrentUser(existingUser);
+        showLoginSuccess();
         
       } else {
         // Registration logic
         const existingUser = storageUtils.getUserByEmail(formData.email);
         
         if (existingUser) {
-          setErrors([t('error.userExists')]);
+          showError('Ошибка регистрации', t('error.userExists'));
           setIsLoading(false);
           return;
         }
@@ -122,11 +123,12 @@ const AuthModal: React.FC = () => {
         storageUtils.saveUser(newUser);
         storageUtils.setCurrentUser(newUser);
         setCurrentUser(newUser);
+        showRegisterSuccess();
       }
       
       closeAuthModal();
     } catch (error) {
-      setErrors([t('error.generic')]);
+      showError('Ошибка', t('error.generic'));
     }
     
     setIsLoading(false);

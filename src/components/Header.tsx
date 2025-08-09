@@ -8,11 +8,13 @@ const Header: React.FC = () => {
     setCurrentUser,
     openAuthModal, 
     openSupportModal,
+    openProfileModal,
     language,
     setLanguage,
     t,
     isMobileMenuOpen,
-    setMobileMenuOpen
+    setMobileMenuOpen,
+    showLogoutSuccess
   } = useApp();
 
   const [showDashboard, setShowDashboard] = useState(false);
@@ -22,6 +24,7 @@ const Header: React.FC = () => {
     setCurrentUser(null);
     setShowDashboard(false);
     setMobileMenuOpen(false);
+    showLogoutSuccess();
   };
 
   const handleDashboardClick = () => {
@@ -55,7 +58,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <div 
             className="relative group flex items-center space-x-2 md:space-x-3 cursor-pointer" 
-            onClick={currentUser ? handleDashboardClick : undefined}
+            onClick={openProfileModal}
           >
             <div className="relative">
               <img 

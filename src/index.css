@@ -9,32 +9,57 @@
 body {
   @apply bg-black text-white font-rajdhani antialiased;
   overflow-x: hidden;
+  
+  /* CSS переменные для тем */
+  --primary-gradient: linear-gradient(90deg, #a855f7, #ec4899);
+  --secondary-gradient: linear-gradient(90deg, #8b5cf6, #f59e0b);
+  --accent-color: #a855f7;
+  --glow-color: rgba(168, 85, 247, 0.5);
+  --border-color: rgba(168, 85, 247, 0.3);
 }
 
 /* ======== Neon text and buttons ======== */
 .neon-text {
-  color: #a855f7;
-  text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
+  color: var(--accent-color);
+  text-shadow: 0 0 5px var(--accent-color), 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
 }
 
 .neon-button {
   @apply px-4 py-2 md:px-6 md:py-3 rounded-full font-bold uppercase transition duration-300;
-  background: linear-gradient(90deg, #a855f7, #ec4899);
+  background: var(--primary-gradient);
   color: white;
-  box-shadow: 0 0 10px #a855f7, 0 0 20px #ec4899;
+  box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
 }
 
 .neon-button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px #a855f7, 0 0 25px #ec4899;
+  box-shadow: 0 0 15px var(--glow-color), 0 0 25px var(--glow-color);
 }
 
 /* ======== Neon border (for cards, modals) ======== */
 .neon-box {
-  @apply rounded-2xl border border-purple-500/40 p-4 md:p-6 shadow-lg;
+  @apply rounded-2xl p-4 md:p-6 shadow-lg;
+  border: 1px solid var(--border-color);
   background-color: rgba(15, 15, 15, 0.8);
   backdrop-filter: blur(8px);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 15px var(--glow-color);
+}
+
+/* ======== Theme-aware gradients ======== */
+.theme-gradient-primary {
+  background: var(--primary-gradient);
+}
+
+.theme-gradient-secondary {
+  background: var(--secondary-gradient);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+.theme-glow {
+  box-shadow: 0 0 20px var(--glow-color);
 }
 
 /* ======== Animations ======== */

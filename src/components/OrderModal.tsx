@@ -7,7 +7,7 @@ import { X, CreditCard } from "lucide-react";
 import { useApp } from "../context/AppContext";
 
 const OrderModal: React.FC = () => {
-  const { isOrderOpen, closeOrderModal, selectedProductForOrder, currentUser, t } = useApp();
+  const { isOrderOpen, closeOrderModal, selectedProductForOrder, currentUser, t, showPurchaseSuccess } = useApp();
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const OrderModal: React.FC = () => {
     // Simulate free purchase
     setTimeout(() => {
       if (currentUser && selectedProductForOrder) {
-        // Generate unique key
-        const accessKey = generateAccessKey();
+        // Generate unique key and show notification
+        const accessKey = showPurchaseSuccess(selectedProductForOrder.title);
         
         const purchasedProduct: PurchasedProduct = {
           id: selectedProductForOrder.id,
