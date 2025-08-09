@@ -13,9 +13,14 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
+  const products = Array.isArray(currentUser?.purchasedProducts)
+    ? currentUser!.purchasedProducts
+    : [];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-gray-900 rounded-2xl shadow-xl w-full max-w-2xl p-6 text-white relative">
+        {/* Закрыть */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -26,14 +31,14 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <h2 className="text-2xl font-bold mb-4">Личный кабинет</h2>
 
         {/* Список продуктов */}
-        {!currentUser?.purchasedProducts || currentUser.purchasedProducts.length === 0 ? (
+        {products.length === 0 ? (
           <div className="text-center py-4">
             <Key size={32} className="mx-auto text-gray-500 mb-2" />
             <p className="text-gray-400">У вас пока нет приобретённых продуктов</p>
           </div>
         ) : (
           <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
-            {currentUser.purchasedProducts.map((product, index) => (
+            {products.map((product, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
@@ -47,6 +52,7 @@ const ProfileModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     Настройки продукта
                   </button>
                 </div>
+
                 {product.accessKey && (
                   <div className="bg-gray-900/50 border border-yellow-500/30 rounded-lg p-3">
                     <div className="flex items-center justify-between">
