@@ -1,20 +1,38 @@
+// src/context/AppContext.tsx
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+// Типы
+interface PurchasedProduct {
+  title: string;
+  accessKey?: string;
+}
+
+interface User {
+  email: string;
+  purchasedProducts: PurchasedProduct[];
+}
+
+interface AppContextType {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
+  t: (key: string) => string;
+}
+
+// Переводы
 const translations = {
   ru: {
-    // Header
     "header.home": "Главная",
     "header.shop": "Магазин",
     "header.support": "Поддержка",
     "header.auth": "Авторизация",
     "header.profile": "Личный кабинет",
 
-    // Footer
     "footer.about": "О нас",
     "footer.terms": "Условия пользования",
     "footer.privacy": "Политика конфиденциальности",
     "footer.contact": "Контакты",
     "footer.copyright": "© 2025 Rockstar Client. Все права защищены",
 
-    // Auth
     "auth.login": "Войти",
     "auth.register": "Регистрация",
     "auth.email": "Эл. почта",
@@ -24,14 +42,12 @@ const translations = {
     "auth.successLogin": "Вы успешно вошли!",
     "auth.successRegister": "Вы успешно зарегистрированы!",
 
-    // Shop
     "shop.buyNow": "Купить сейчас",
     "shop.popular": "ПОПУЛЯРНЫЙ",
     "shop.price": "Цена",
     "shop.term": "Срок",
     "shop.features": "Возможности",
 
-    // Orders
     "order.title": "Оформление заказа",
     "order.product": "Продукт",
     "order.email": "Эл. почта",
@@ -39,35 +55,29 @@ const translations = {
     "order.success": "Вы успешно купили чит!",
     "order.keyIssued": "Вот ваш ключ:",
 
-    // Profile
     "profile.title": "Личный кабинет",
     "profile.noProducts": "У вас пока нет приобретённых продуктов",
     "profile.addProduct": "Добавить продукт по ключу",
     "profile.productSettings": "Настройки продукта",
     "profile.logout": "Выйти",
 
-    // Support
     "support.title": "Поддержка",
     "support.description": "Отправьте нам сообщение, и мы свяжемся с вами.",
     "support.send": "Отправить"
   },
-
   en: {
-    // Header
     "header.home": "Home",
     "header.shop": "Shop",
     "header.support": "Support",
     "header.auth": "Authorization",
     "header.profile": "Profile",
 
-    // Footer
     "footer.about": "About Us",
     "footer.terms": "Terms of Service",
     "footer.privacy": "Privacy Policy",
     "footer.contact": "Contact",
     "footer.copyright": "© 2025 Rockstar Client. All rights reserved",
 
-    // Auth
     "auth.login": "Login",
     "auth.register": "Register",
     "auth.email": "Email",
@@ -77,14 +87,12 @@ const translations = {
     "auth.successLogin": "You have successfully logged in!",
     "auth.successRegister": "You have successfully registered!",
 
-    // Shop
     "shop.buyNow": "Buy Now",
     "shop.popular": "POPULAR",
     "shop.price": "Price",
     "shop.term": "Term",
     "shop.features": "Features",
 
-    // Orders
     "order.title": "Place Order",
     "order.product": "Product",
     "order.email": "Email",
@@ -92,16 +100,46 @@ const translations = {
     "order.success": "You have successfully purchased the cheat!",
     "order.keyIssued": "Here is your key:",
 
-    // Profile
     "profile.title": "Profile",
     "profile.noProducts": "You have no purchased products yet",
     "profile.addProduct": "Add product by key",
     "profile.productSettings": "Product Settings",
     "profile.logout": "Logout",
 
-    // Support
     "support.title": "Support",
     "support.description": "Send us a message and we will contact you.",
     "support.send": "Send"
   }
+};
+
+// Контекст
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [language, setLanguage] = useState<"ru" | "en">("ru");
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem("rockstar_lang") as "ru" | "en" | null;
+    if (savedLang) setLanguage(savedLang);
+  }, []);
+
+  const t = (key: string) => {
+    return translations[language]?.[key] || key;
+  };
+
+  return (
+    <AppContext.Provider value={{ currentUser, setCurrentUser, t }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+// Хук
+export const useApp = (): AppContextType => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useApp must be used within an AppContextProvider");
+  }
+  return context;
 };
