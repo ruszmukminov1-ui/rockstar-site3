@@ -1,131 +1,67 @@
-// src/context/AppContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-// Типы
+// Интерфейс для купленных продуктов
 interface PurchasedProduct {
   title: string;
   accessKey?: string;
 }
 
+// Интерфейс для пользователя
 interface User {
   email: string;
   purchasedProducts: PurchasedProduct[];
 }
 
+// Интерфейс контекста
 interface AppContextType {
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
   t: (key: string) => string;
 }
 
+// Создаем контекст
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
 // Переводы
-const translations = {
+const translations: Record<string, Record<string, string>> = {
   ru: {
     "header.home": "Главная",
     "header.shop": "Магазин",
     "header.support": "Поддержка",
     "header.auth": "Авторизация",
-    "header.profile": "Личный кабинет",
-
-    "footer.about": "О нас",
-    "footer.terms": "Условия пользования",
-    "footer.privacy": "Политика конфиденциальности",
-    "footer.contact": "Контакты",
-    "footer.copyright": "© 2025 Rockstar Client. Все права защищены",
-
-    "auth.login": "Войти",
-    "auth.register": "Регистрация",
-    "auth.email": "Эл. почта",
-    "auth.password": "Пароль",
-    "auth.confirmPassword": "Подтвердите пароль",
-    "auth.logout": "Выйти",
-    "auth.successLogin": "Вы успешно вошли!",
-    "auth.successRegister": "Вы успешно зарегистрированы!",
-
-    "shop.buyNow": "Купить сейчас",
-    "shop.popular": "ПОПУЛЯРНЫЙ",
-    "shop.price": "Цена",
-    "shop.term": "Срок",
-    "shop.features": "Возможности",
-
-    "order.title": "Оформление заказа",
-    "order.product": "Продукт",
-    "order.email": "Эл. почта",
-    "order.pay": "Оплатить",
-    "order.success": "Вы успешно купили чит!",
-    "order.keyIssued": "Вот ваш ключ:",
-
+    "footer.copyright": "© 2025 Rockstar 2.0. Все права защищены.",
     "profile.title": "Личный кабинет",
     "profile.noProducts": "У вас пока нет приобретённых продуктов",
-    "profile.addProduct": "Добавить продукт по ключу",
-    "profile.productSettings": "Настройки продукта",
-    "profile.logout": "Выйти",
-
-    "support.title": "Поддержка",
-    "support.description": "Отправьте нам сообщение, и мы свяжемся с вами.",
-    "support.send": "Отправить"
+    "profile.addProduct": "Добавить продукт",
+    "profile.productSettings": "Настройки продукта"
   },
   en: {
     "header.home": "Home",
     "header.shop": "Shop",
     "header.support": "Support",
-    "header.auth": "Authorization",
-    "header.profile": "Profile",
-
-    "footer.about": "About Us",
-    "footer.terms": "Terms of Service",
-    "footer.privacy": "Privacy Policy",
-    "footer.contact": "Contact",
-    "footer.copyright": "© 2025 Rockstar Client. All rights reserved",
-
-    "auth.login": "Login",
-    "auth.register": "Register",
-    "auth.email": "Email",
-    "auth.password": "Password",
-    "auth.confirmPassword": "Confirm Password",
-    "auth.logout": "Logout",
-    "auth.successLogin": "You have successfully logged in!",
-    "auth.successRegister": "You have successfully registered!",
-
-    "shop.buyNow": "Buy Now",
-    "shop.popular": "POPULAR",
-    "shop.price": "Price",
-    "shop.term": "Term",
-    "shop.features": "Features",
-
-    "order.title": "Place Order",
-    "order.product": "Product",
-    "order.email": "Email",
-    "order.pay": "Pay",
-    "order.success": "You have successfully purchased the cheat!",
-    "order.keyIssued": "Here is your key:",
-
+    "header.auth": "Auth",
+    "footer.copyright": "© 2025 Rockstar 2.0. All rights reserved.",
     "profile.title": "Profile",
     "profile.noProducts": "You have no purchased products yet",
-    "profile.addProduct": "Add product by key",
-    "profile.productSettings": "Product Settings",
-    "profile.logout": "Logout",
-
-    "support.title": "Support",
-    "support.description": "Send us a message and we will contact you.",
-    "support.send": "Send"
+    "profile.addProduct": "Add product",
+    "profile.productSettings": "Product settings"
   }
 };
 
-// Контекст
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
+// Провайдер
 export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [language, setLanguage] = useState<"ru" | "en">("ru");
+  // По умолчанию пользователь с пустым списком продуктов, чтобы избежать ошибок .map
+  const [currentUser, setCurrentUser] = useState<User>({
+    email: "",
+    purchasedProducts: []
+  });
 
-  useEffect(() => {
-    const savedLang = localStorage.getItem("rockstar_lang") as "ru" | "en" | null;
-    if (savedLang) setLanguage(savedLang);
-  }, []);
+  // Текущий язык (можно сделать динамическим)
+  const [lang] = useState<"ru" | "en">("ru");
 
+  // Функция перевода
   const t = (key: string) => {
-    return translations[language]?.[key] || key;
+    return translations[lang][key] || key;
   };
 
   return (
@@ -135,7 +71,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
   );
 };
 
-// Хук
+// Хук для использования контекста
 export const useApp = (): AppContextType => {
   const context = useContext(AppContext);
   if (!context) {
