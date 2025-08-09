@@ -1,212 +1,107 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product } from '../types/Product';
-import { User, PurchasedProduct } from '../types/User';
-import { storageUtils } from '../utils/storage';
-import { useNotifications } from '../hooks/useNotifications';
+const translations = {
+  ru: {
+    // Header
+    "header.home": "Главная",
+    "header.shop": "Магазин",
+    "header.support": "Поддержка",
+    "header.auth": "Авторизация",
+    "header.profile": "Личный кабинет",
 
-export type Language = 'ru' | 'en';
+    // Footer
+    "footer.about": "О нас",
+    "footer.terms": "Условия пользования",
+    "footer.privacy": "Политика конфиденциальности",
+    "footer.contact": "Контакты",
+    "footer.copyright": "© 2025 Rockstar Client. Все права защищены",
 
-interface AppContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
-  
-  // Modals
-  isAuthOpen: boolean;
-  openAuthModal: () => void;
-  closeAuthModal: () => void;
-  isSupportOpen: boolean;
-  openSupportModal: () => void;
-  closeSupportModal: () => void;
-  isOrderOpen: boolean;
-  openOrderModal: (product: Product) => void;
-  closeOrderModal: () => void;
-  selectedProductForOrder: Product | null;
-  
-  // User
-  currentUser: User | null;
-  setCurrentUser: (user: User | null) => void;
-  
-  // Mobile menu
-  isMobileMenuOpen: boolean;
-  setMobileMenuOpen: (open: boolean) => void;
-  
-  // Profile modal
-  isProfileOpen: boolean;
-  openProfileModal: () => void;
-  closeProfileModal: () => void;
+    // Auth
+    "auth.login": "Войти",
+    "auth.register": "Регистрация",
+    "auth.email": "Эл. почта",
+    "auth.password": "Пароль",
+    "auth.confirmPassword": "Подтвердите пароль",
+    "auth.logout": "Выйти",
+    "auth.successLogin": "Вы успешно вошли!",
+    "auth.successRegister": "Вы успешно зарегистрированы!",
 
-  // Product details modal
-  isProductDetailsOpen: boolean;
-  openProductDetailsModal: (product: PurchasedProduct, clickPosition?: { x: number; y: number }) => void;
-  closeProductDetailsModal: () => void;
-  selectedProductForDetails: PurchasedProduct | null;
-  productDetailsClickPosition: { x: number; y: number } | undefined;
+    // Shop
+    "shop.buyNow": "Купить сейчас",
+    "shop.popular": "ПОПУЛЯРНЫЙ",
+    "shop.price": "Цена",
+    "shop.term": "Срок",
+    "shop.features": "Возможности",
 
-  // Notifications
-  notifications: any[];
-  removeNotification: (id: string) => void;
-  showLoginSuccess: () => void;
-  showRegisterSuccess: () => void;
-  showPurchaseSuccess: (productTitle: string) => string;
-  showLogoutSuccess: () => void;
-  showError: (title: string, message: string) => void;
-}
+    // Orders
+    "order.title": "Оформление заказа",
+    "order.product": "Продукт",
+    "order.email": "Эл. почта",
+    "order.pay": "Оплатить",
+    "order.success": "Вы успешно купили чит!",
+    "order.keyIssued": "Вот ваш ключ:",
 
-const translations = { /* ... твой объект переводов без изменений ... */ };
+    // Profile
+    "profile.title": "Личный кабинет",
+    "profile.noProducts": "У вас пока нет приобретённых продуктов",
+    "profile.addProduct": "Добавить продукт по ключу",
+    "profile.productSettings": "Настройки продукта",
+    "profile.logout": "Выйти",
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+    // Support
+    "support.title": "Поддержка",
+    "support.description": "Отправьте нам сообщение, и мы свяжемся с вами.",
+    "support.send": "Отправить"
+  },
 
-export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>('ru');
-  const [isAuthOpen, setAuthOpen] = useState(false);
-  const [isSupportOpen, setSupportOpen] = useState(false);
-  const [isOrderOpen, setOrderOpen] = useState(false);
-  const [selectedProductForOrder, setSelectedProductForOrder] = useState<Product | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isProfileOpen, setProfileOpen] = useState(false);
+  en: {
+    // Header
+    "header.home": "Home",
+    "header.shop": "Shop",
+    "header.support": "Support",
+    "header.auth": "Authorization",
+    "header.profile": "Profile",
 
-  const [isProductDetailsOpen, setProductDetailsOpen] = useState(false);
-  const [selectedProductForDetails, setSelectedProductForDetails] = useState<PurchasedProduct | null>(null);
-  const [productDetailsClickPosition, setProductDetailsClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
-  
-  const {
-    notifications,
-    removeNotification,
-    showLoginSuccess,
-    showRegisterSuccess,
-    showPurchaseSuccess,
-    showLogoutSuccess,
-    showError,
-  } = useNotifications();
+    // Footer
+    "footer.about": "About Us",
+    "footer.terms": "Terms of Service",
+    "footer.privacy": "Privacy Policy",
+    "footer.contact": "Contact",
+    "footer.copyright": "© 2025 Rockstar Client. All rights reserved",
 
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('rockstar_language') as Language;
-    if (savedLanguage && (savedLanguage === 'ru' || savedLanguage === 'en')) {
-      setLanguageState(savedLanguage);
-    }
-  }, []);
+    // Auth
+    "auth.login": "Login",
+    "auth.register": "Register",
+    "auth.email": "Email",
+    "auth.password": "Password",
+    "auth.confirmPassword": "Confirm Password",
+    "auth.logout": "Logout",
+    "auth.successLogin": "You have successfully logged in!",
+    "auth.successRegister": "You have successfully registered!",
 
-  useEffect(() => {
-    const existingUser = storageUtils.getCurrentUser();
-    if (existingUser) {
-      setCurrentUser(existingUser);
-    }
-  }, []);
+    // Shop
+    "shop.buyNow": "Buy Now",
+    "shop.popular": "POPULAR",
+    "shop.price": "Price",
+    "shop.term": "Term",
+    "shop.features": "Features",
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('rockstar_language', lang);
-  };
+    // Orders
+    "order.title": "Place Order",
+    "order.product": "Product",
+    "order.email": "Email",
+    "order.pay": "Pay",
+    "order.success": "You have successfully purchased the cheat!",
+    "order.keyIssued": "Here is your key:",
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
-  };
+    // Profile
+    "profile.title": "Profile",
+    "profile.noProducts": "You have no purchased products yet",
+    "profile.addProduct": "Add product by key",
+    "profile.productSettings": "Product Settings",
+    "profile.logout": "Logout",
 
-  const openAuthModal = () => {
-    setAuthOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-  const closeAuthModal = () => {
-    setAuthOpen(false);
-    document.body.style.overflow = 'unset';
-  };
-
-  const openSupportModal = () => {
-    setSupportOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-  const closeSupportModal = () => {
-    setSupportOpen(false);
-    document.body.style.overflow = 'unset';
-  };
-
-  const openOrderModal = (product: Product) => {
-    setSelectedProductForOrder(product);
-    setOrderOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-  const closeOrderModal = () => {
-    setSelectedProductForOrder(null);
-    setOrderOpen(false);
-    document.body.style.overflow = 'unset';
-  };
-
-  const openProfileModal = () => {
-    setProfileOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-  const closeProfileModal = () => {
-    setProfileOpen(false);
-    document.body.style.overflow = 'unset';
-  };
-
-  const openProductDetailsModal = (product: PurchasedProduct, clickPosition?: { x: number; y: number }) => {
-    setSelectedProductForDetails(product);
-    setProductDetailsClickPosition(clickPosition);
-    setProductDetailsOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-  const closeProductDetailsModal = () => {
-    setSelectedProductForDetails(null);
-    setProductDetailsClickPosition(undefined);
-    setProductDetailsOpen(false);
-    document.body.style.overflow = 'unset';
-  };
-
-  useEffect(() => {
-    if (isAuthOpen || isSupportOpen || isOrderOpen || isProfileOpen || isProductDetailsOpen) {
-      setMobileMenuOpen(false);
-    }
-  }, [isAuthOpen, isSupportOpen, isOrderOpen, isProfileOpen, isProductDetailsOpen]);
-
-  return (
-    <AppContext.Provider
-      value={{
-        language,
-        setLanguage,
-        t,
-        isAuthOpen,
-        openAuthModal,
-        closeAuthModal,
-        isSupportOpen,
-        openSupportModal,
-        closeSupportModal,
-        isOrderOpen,
-        openOrderModal,
-        closeOrderModal,
-        selectedProductForOrder,
-        currentUser,
-        setCurrentUser,
-        isMobileMenuOpen,
-        setMobileMenuOpen,
-        isProfileOpen,
-        openProfileModal,
-        closeProfileModal,
-        isProductDetailsOpen,
-        openProductDetailsModal,
-        closeProductDetailsModal,
-        selectedProductForDetails,
-        productDetailsClickPosition,
-        notifications,
-        removeNotification,
-        showLoginSuccess,
-        showRegisterSuccess,
-        showPurchaseSuccess,
-        showLogoutSuccess,
-        showError,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
-};
-
-export const useApp = (): AppContextType => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useApp must be used within an AppContextProvider');
+    // Support
+    "support.title": "Support",
+    "support.description": "Send us a message and we will contact you.",
+    "support.send": "Send"
   }
-  return context;
 };
