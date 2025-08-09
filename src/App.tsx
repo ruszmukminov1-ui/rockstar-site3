@@ -34,15 +34,13 @@ function AppContent() {
     notifications,
     removeNotification
   } = useApp();
+  
   const [showDashboard, setShowDashboard] = useState(false);
 
   const scrollToShop = () => {
     const shopElement = document.getElementById('shop');
     if (shopElement) {
-      shopElement.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+      shopElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -50,35 +48,41 @@ function AppContent() {
     <Router>
       <Routes>
         {/* Main page */}
-        <Route path="/" element={
-          showDashboard && currentUser ? (
-            <div className="relative bg-black text-white font-rajdhani overflow-x-hidden">
+        <Route 
+          path="/" 
+          element={
+            showDashboard && currentUser ? (
+              <div className="relative bg-black text-white font-rajdhani overflow-x-hidden">
+                <Header />
+                <Dashboard user={currentUser} onBack={() => setShowDashboard(false)} />
+                <FloatingElements />
+              </div>
+            ) : (
+              <div className="relative bg-black text-white font-rajdhani overflow-x-hidden">
+                <Header />
+                <Hero onBuyClick={scrollToShop} />
+                <Features />
+                <Shop />
+                <VideoReviews />
+                <Footer />
+                <FloatingElements />
+              </div>
+            )
+          } 
+        />
+
+        {/* Terms page */}
+        <Route 
+          path="/terms" 
+          element={
+            <div className="animate-fade-in bg-black min-h-screen text-white font-rajdhani">
               <Header />
-              <Dashboard user={currentUser} onBack={() => setShowDashboard(false)} />
-              <FloatingElements />
-            </div>
-          ) : (
-            <div className="relative bg-black text-white font-rajdhani overflow-x-hidden">
-              <Header />
-              <Hero onBuyClick={scrollToShop} />
-              <Features />
-              <Shop />
-              <VideoReviews />
+              <Terms />
               <Footer />
               <FloatingElements />
             </div>
-          )
-        } />
-
-        {/* Terms page */}
-        <Route path="/terms" element={
-          <div className="animate-fade-in bg-black min-h-screen text-white font-rajdhani">
-            <Header />
-            <Terms />
-            <Footer />
-            <FloatingElements />
-          </div>
-        } />
+          } 
+        />
       </Routes>
 
       {/* Modals */}
